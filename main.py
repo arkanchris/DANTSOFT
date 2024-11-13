@@ -103,65 +103,54 @@ def ver_clientes():
     # Crear una nueva ventana para la consulta de clientes
     ventana_consulta = tk.Toplevel(ventana)
     ventana_consulta.title("Consulta de Clientes")
-    ventana_consulta.geometry("400x100")
+    ventana_consulta.geometry("800x400")  # Asegurar un tamaño adecuado para la tabla
     ventana_consulta.config(bg="#f0f0f0")  # Fondo igual al de la ventana principal
-    
+
     # Crear un Label y un Combobox para seleccionar la plataforma
     label_plataforma_filtro = tk.Label(ventana_consulta, text="Selecciona Plataforma:", bg="#f0f0f0", font=font_style)
     label_plataforma_filtro.grid(row=0, column=0, padx=5, pady=5, sticky="e")
     combobox_plataforma_filtro = ttk.Combobox(ventana_consulta, values=plataformas, font=font_style, state="readonly")
     combobox_plataforma_filtro.grid(row=0, column=1, padx=5, pady=5)
 
+    # Crear la tabla de clientes fuera de la función 'obtener_clientes' para asegurar su visibilidad
+    columnas = ("Cliente", "Perfil", "Teléfono", "Proveedor", "Orden", "Correo", "Fecha Inicio", "Fecha Fin", "Plataforma")
+    tabla = ttk.Treeview(ventana_consulta, columns=columnas, show="headings")
+
+    # Establecer los encabezados de las columnas
+    for col in columnas:
+        tabla.heading(col, text=col)
+        tabla.column(col, width=120, anchor="center")  # Alineación y tamaño de columnas
+
+    # Colocar la tabla en la ventana de consulta
+    tabla.grid(row=1, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
+
     # Función para obtener los clientes filtrados
     def obtener_clientes():
         plataforma_seleccionada = combobox_plataforma_filtro.get()
         
-        # Limpiar la tabla si existe una previamente
+        # Limpiar la tabla
         for item in tabla.get_children():
             tabla.delete(item)
-        
+
         # Conectar a la base de datos y obtener los clientes filtrados por plataforma
         conn = sqlite3.connect("clientes.db")
         cursor = conn.cursor()
-        
-        # Si se selecciona una plataforma, filtrar por esa plataforma
+
         if plataforma_seleccionada:
             cursor.execute("SELECT cliente, perfil, telefono, proveedor, orden, correo, fecha_inicio, fecha_fin, plataforma FROM clientes WHERE plataforma = ?", (plataforma_seleccionada,))
         else:
             cursor.execute("SELECT cliente, perfil, telefono, proveedor, orden, correo, fecha_inicio, fecha_fin, plataforma FROM clientes")
-        
+
         registros = cursor.fetchall()
         conn.close()
-
-        # Crear la tabla de clientes
-        columnas = ("Cliente", "Perfil", "Teléfono", "Proveedor", "Orden", "Correo", "Fecha Inicio", "Fecha Fin", "Plataforma")
-        tabla = ttk.Treeview(ventana_consulta, columns=columnas, show="headings")
-
-        # Establecer los encabezados de las columnas
-        for col in columnas:
-            tabla.heading(col, text=col)
-            tabla.column(col, width=120, anchor="center")  # Alineación y tamaño de columnas
 
         # Insertar registros en la tabla
         for registro in registros:
             tabla.insert("", tk.END, values=registro)
 
-        # Estilo de la tabla
-        style = ttk.Style()
-        style.configure("Custom.Treeview",
-                        font=("Dosis ExtraBold", 11),
-                        foreground="black", background="#ecf0f1",  # Fondo de celdas más claro
-                        fieldbackground="#ecf0f1", rowheight=25)
-
-        style.map("Custom.Treeview", background=[("selected", "#4CAF50")])  # Color de fila seleccionada
-
-        tabla.configure(style="Custom.Treeview")  # Aplicar el estilo a la tabla
-        tabla.pack(expand=True, fill="both", padx=10, pady=10)
-
-    # Crear un botón para obtener los clientes filtrados
+    # Crear el botón para consultar
     boton_consultar = tk.Button(ventana_consulta, text="Consultar", command=obtener_clientes, font=font_style, bg="blue", fg="white")
-    boton_consultar.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
-
+    boton_consultar.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
 
 
 # Configuración de la ventana principal
