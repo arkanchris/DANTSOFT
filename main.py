@@ -193,25 +193,41 @@ campos = [
 
 entries = []
 
-# Crear entradas con marcador de posición
+# Función para crear un campo de entrada con marcador de posición
 def crear_entry(row, col, placeholder):
     entry = ttk.Entry(ventana, width=20, font=font_style, style="Rounded.TEntry")
-    entry.insert(0, placeholder)
+    entry.insert(0, placeholder)  # Insertar marcador de posición
     entry.placeholder = placeholder
-    entry.bind("<FocusIn>", lambda event, e=entry: on_focus_in(e))
-    entry.bind("<FocusOut>", lambda event, e=entry: on_focus_out(e))
-    entry.grid(row=row, column=col, padx=5, pady=5)
+    entry.bind("<FocusIn>", lambda event, e=entry: on_focus_in(e))  # Eliminar marcador al hacer focus
+    entry.bind("<FocusOut>", lambda event, e=entry: on_focus_out(e))  # Restaurar marcador si está vacío
+    entry.grid(row=row, column=col, padx=5, pady=5)  # Ubicar el campo en la ventana
     return entry
 
-# Crear etiquetas y entradas en una cuadrícula
-for i, (label_text, placeholder) in enumerate(campos):
-    row, col = divmod(i, 2)
-    label = tk.Label(ventana, text=label_text, bg="#f0f0f0", font=font_style)
-    label.grid(row=row, column=col * 2, padx=5, pady=5, sticky="e")
-    entry = crear_entry(row, col * 2 + 1, placeholder)
-    entries.append(entry)
+# Crear etiquetas y campos de entrada para los clientes
+campos = [
+    ("Cliente:", "Nombre completo"),  # Campo de cliente
+    ("Perfil:", "Perfil de usuario"),  # Campo de perfil
+    ("Teléfono:", "Número de teléfono"),  # Campo de teléfono
+    ("Proveedor:", "Nombre del proveedor"),  # Campo de proveedor
+    ("Orden:", "Número de orden"),  # Campo de orden
+    ("Correo:", "Correo electrónico"),  # Campo de correo
+    ("Contraseña:", "Contraseña"),  # Campo de contraseña
+    ("Pin:", "PIN"),  # Campo de PIN
+    ("Precio:", "Precio en USD")  # Campo de precio
+]
 
-# Campos de fecha con calendario
+# Crear una lista para almacenar los campos de entrada
+entries = []
+
+# Iterar sobre los campos para crear etiquetas y entradas
+for i, (label_text, placeholder) in enumerate(campos):
+    row, col = divmod(i, 2)  # Organizar los campos en filas y columnas
+    label = tk.Label(ventana, text=label_text, bg="#f0f0f0", font=font_style)  # Etiqueta
+    label.grid(row=row, column=col * 2, padx=5, pady=5, sticky="e")  # Colocar la etiqueta
+    entry = crear_entry(row, col * 2 + 1, placeholder)  # Crear el campo de entrada
+    entries.append(entry)  # Agregar el campo a la lista
+
+# Configuración de los campos de fecha con calendario
 label_fecha_inicio = tk.Label(ventana, text="Fecha Inicio:", bg="#f0f0f0", font=font_style)
 label_fecha_inicio.grid(row=5, column=0, padx=5, pady=5, sticky="e")
 entry_fecha_inicio = DateEntry(ventana, width=18, font=font_style, background='darkblue', foreground='white', borderwidth=2)
@@ -222,12 +238,13 @@ label_fecha_fin.grid(row=5, column=2, padx=5, pady=5, sticky="e")
 entry_fecha_fin = DateEntry(ventana, width=18, font=font_style, background='darkblue', foreground='white', borderwidth=2)
 entry_fecha_fin.grid(row=5, column=3, padx=5, pady=5)
 
-# Combobox para la plataforma
+# Combobox para seleccionar la plataforma
 label_plataforma = tk.Label(ventana, text="Plataforma:", bg="#f0f0f0", font=font_style)
 label_plataforma.grid(row=6, column=0, padx=5, pady=5, sticky="e")
 plataformas = ['Netflix', 'HBO', 'Prime Video', 'Disney+', 'VIX', 'Plex', 'Spotify', 'Youtube', 'Paramount', 'Crunchyroll']
 combobox_plataforma = ttk.Combobox(ventana, values=plataformas, font=font_style, state="readonly")
 combobox_plataforma.grid(row=6, column=1, padx=5, pady=5)
+
 
 # Botones
 boton_guardar = tk.Button(ventana, text="Guardar Cliente", command=agregar_cliente, font=font_style, bg="green", fg="white")
